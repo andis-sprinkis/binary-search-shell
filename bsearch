@@ -278,8 +278,9 @@ search_loop() {
   f() { [ "$(dec_at "$idx_mid")" -ge "$tgt" ] && echo "1" || echo "0"; }
 }
 
-[ "$eql" = "lt" ] || [ "$eql" = "le" ] && idx_min="-1" idx_max="$(("$len_space" - "1"))"
-[ "$eql" = "gt" ] || [ "$eql" = "ge" ] || [ "$eql" = "e" ] && idx_min="0" idx_max="$len_space"
+[ "$eql" = "lt" ] || [ "$eql" = "le" ] \
+  && idx_min="-1" idx_max="$(("$len_space" - "1"))" \
+  || idx_min="0" idx_max="$len_space"
 
 search_loop
 
