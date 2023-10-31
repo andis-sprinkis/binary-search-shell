@@ -41,8 +41,8 @@ DESCRIPTION
         Target equality boundary.
 
         Less than - lt
-        Less than or equal - le (default)
-        Exact - e
+        Less than or equal - le
+        Equal - e (default)
         Greater than - gt
         Greater than or equal - ge
 
@@ -183,7 +183,7 @@ len_space="$(wc -l <<< "$space")"
   exit "2"
 }
 
-eql="${arg_opt_e:-"le"}"
+eql="${arg_opt_e:-"e"}"
 
 # Option -r
 
