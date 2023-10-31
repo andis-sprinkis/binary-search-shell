@@ -62,6 +62,7 @@ DESCRIPTION
         e.g.
         The index is 0 and the number 22, it prints '0 22'
         The index is 81 and the number is -FFFF, it prints '81 -FFFF'
+
     -b BASE
         The numerical base for the target and seach space.
 
