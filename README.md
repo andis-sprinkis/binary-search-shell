@@ -1,4 +1,4 @@
-# Binary search *nix shell script
+# Binary search shell script
 
 See
 ```sh
