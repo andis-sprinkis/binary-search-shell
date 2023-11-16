@@ -4,7 +4,7 @@ set -e
 script="$(basename "$0")"
 
 help_info="NAME
-    ${script} - Find the closest integer to target.
+    ${script} - Find the closest integer to a target integer in an ordered list of integers.
 
 SYNOPSIS
     ${script} -t INTEGER -s FILE [-i] [-e EQUALITY] [-r BOUNDARY] [-b BASE] [-g]
