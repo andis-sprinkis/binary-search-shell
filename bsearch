@@ -132,7 +132,7 @@ while getopts b:e:r:s:t:ghi name; do
     t) opt_t="1"
        arg_opt_t="$OPTARG"
        ;;
-    ?) echo "$help_info"
+    ?) echo "$help_info" 1>&2
        exit "2"
        ;;
   esac
@@ -145,7 +145,7 @@ debug="$opt_g"
 # Option -b
 
 [ "$arg_opt_b" ] && [ ! "$arg_opt_b" = "dec" ] && [ ! "$arg_opt_b" = "hex" ] && {
-  echo "${script}: The BASE argument for option -b is not valid. It must be either 'dec' or 'hex'."
+  echo "${script}: The BASE argument for option -b is not valid. It must be either 'dec' or 'hex'." 1>&2
   exit "2"
 }
 
@@ -154,7 +154,7 @@ base="${arg_opt_b:-dec}"
 # Option -t
 
 [ ! "$opt_t" ] && {
-  echo "${script}: Required option missing - -t NUMBER"
+  echo "${script}: Required option missing - -t NUMBER" 1>&2
   exit "2"
 }
 
@@ -165,12 +165,12 @@ tgt_orig="$arg_opt_t"
 # Option -s
 
 [ ! "$opt_s" ] && {
-  echo "${script}: Required option missing - -s FILE"
+  echo "${script}: Required option missing - -s FILE" 1>&2
   exit "2"
 }
 
 [ ! -e "$arg_opt_s" ] && {
-  echo "${script}: The file path given in search space argument FILE for option -s doesn't point to an existing file."
+  echo "${script}: The file path given in search space argument FILE for option -s doesn't point to an existing file." 1>&2
   exit "2"
 }
 
@@ -180,7 +180,7 @@ len_space="$(wc -l <<< "$space")"
 # Option -e
 
 [ "$arg_opt_e" ] && [ ! "$arg_opt_e" = "lt" ] && [ ! "$arg_opt_e" = "le" ] && [ ! "$arg_opt_e" = "e" ] && [ ! "$arg_opt_e" = "ge" ] && [ ! "$arg_opt_e" = "gt" ] && {
-  echo "${script}: The EQUALITY argument for option -e is not valid."
+  echo "${script}: The EQUALITY argument for option -e is not valid." 1>&2
   exit "2"
 }
 
@@ -189,7 +189,7 @@ eql="${arg_opt_e:-"e"}"
 # Option -r
 
 [ "$arg_opt_r" ] && [ ! "$arg_opt_r" = "min" ] && [ ! "$arg_opt_r" = "max" ] && {
-  echo "${script}: The SIZE argument for option -r is not valid."
+  echo "${script}: The SIZE argument for option -r is not valid." 1>&2
   exit "2"
 }
 
@@ -236,7 +236,7 @@ found() {
 }
 
 not_found() {
-  echo "${script}: No number in the search space for the given search equality."
+  echo "${script}: No number in the search space for the given search equality." 1>&2
   exit "1"
 }
 
