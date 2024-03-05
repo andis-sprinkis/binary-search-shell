@@ -77,7 +77,7 @@ DESCRIPTION
 "
 
 hex_to_dec() {
-  sign_n="$(cut -c1 <<< "$1")"
+  sign_n="$(echo "$1" | cut -c1)"
 
   [ "$sign_n" = "-" ] && {
     printf '%d' "${sign_n}0x$(echo "$1" | cut -c2-)"
@@ -174,8 +174,8 @@ tgt_orig="$arg_opt_t"
   exit "2"
 }
 
-space="$(<"$arg_opt_s")"
-len_space="$(wc -l <<< "$space")"
+space="$(cat "$arg_opt_s")"
+len_space="$(echo "$space" | wc -l)"
 
 # Option -e
 
@@ -207,7 +207,7 @@ print_state() {
   [ "$idx_min" ] && [ "$idx_min" -ge "0" ] && [ "$idx_min" -lt "$len_space" ] && min_orig="$(at "$idx_min")" min="$(dec "$min_orig")"
   [ "$idx_max" ] && [ "$idx_max" -ge "0" ] && [ "$idx_max" -lt "$len_space" ] && max_orig="$(at "$idx_max")" max="$(dec "$max_orig")"
   [ "$idx_mid" ] && [ "$idx_mid" -ge "0" ] && [ "$idx_mid" -lt "$len_space" ] && mid_orig="$(at "$idx_mid")" mid="$(dec "$mid_orig")"
-  [ "$idx_max" ] && [ "$idx_min" ] && len="$(($idx_max - $idx_min))"
+  [ "$idx_max" ] && [ "$idx_min" ] && len="$((idx_max - idx_min))"
 
   state="-:-
 :
@@ -218,21 +218,21 @@ Search space len.:${len}
 Middle index:${idx_mid}
 Middle value:${mid_orig} / dec. ${mid}
 Minimum index:${idx_min}
-Minimum value:${min_orig} / dec. ${mid}
+Minimum value:${min_orig} / dec. ${min}
 Maximum index:${idx_max}
 Maximum value:${max_orig} / dec. ${max}
 Loop:${idx_loop}
 Iteration:${idx_itr}
 :"
 
-  column -t -s ':' -W "2" <<< "$state"
+  echo "$state" | column -t -s ':' -W "2"
 }
 
 found() {
   print_state
 
   [ "$print_idx" ] && { echo "${idx_min} $(at "$idx_min")"; exit; }
-  echo "$(at "$idx_min")"; exit
+  at "$idx_min"; exit
 }
 
 not_found() {
@@ -241,14 +241,14 @@ not_found() {
 }
 
 search_loop() {
-  idx_loop="$(($idx_loop + 1))" idx_itr="0"
-  while [ "$idx_min" -lt "$idx_max" ]; do idx_itr="$(($idx_itr + 1))"
+  idx_loop="$((idx_loop + 1))" idx_itr="0"
+  while [ "$idx_min" -lt "$idx_max" ]; do idx_itr="$((idx_itr + 1))"
     print_state
 
-    idx_mid="$(($idx_min + ($idx_max - $idx_min) / 2))"
+    idx_mid="$((idx_min + (idx_max - idx_min) / 2))"
     # 1 - remove right, move left
     # 0 - remove left, move right
-    [ "$(f)" = "1" ] && idx_max="$idx_mid" || idx_min="$(($idx_mid + 1))"
+    [ "$(f)" = "1" ] && idx_max="$idx_mid" || idx_min="$((idx_mid + 1))"
 
     print_state
   done
@@ -256,31 +256,31 @@ search_loop() {
 
 [ "$eql" = "lt" ] && {
   [ "$tgt" -le "$(dec_at "0")" ] && not_found
-  f() { [ "$(dec_at $(($idx_mid + 1)))" -ge "$tgt" ] && echo "1" || echo "0"; }
+  f() { [ "$(dec_at $((idx_mid + 1)))" -ge "$tgt" ] && echo "1" || echo "0"; }
 }
 
 [ "$eql" = "le" ] && {
   [ "$tgt" -lt "$(dec_at "0")" ] && not_found
-  f() { [ "$(dec_at $(($idx_mid + 1)))" -gt "$tgt" ] && echo "1" || echo "0"; }
+  f() { [ "$(dec_at $((idx_mid + 1)))" -gt "$tgt" ] && echo "1" || echo "0"; }
 }
 
 [ "$eql" = "gt" ] && {
-  [ "$tgt" -ge "$(dec_at "$(($len_space - 1))")" ] && not_found
+  [ "$tgt" -ge "$(dec_at "$((len_space - 1))")" ] && not_found
   f() { [ "$(dec_at "$idx_mid")" -gt "$tgt" ] && echo "1" || echo "0"; }
 }
 
 [ "$eql" = "ge" ] && {
-  [ "$tgt" -gt "$(dec_at "$(($len_space - 1))")" ] && not_found
+  [ "$tgt" -gt "$(dec_at "$((len_space - 1))")" ] && not_found
   f() { [ "$(dec_at "$idx_mid")" -ge "$tgt" ] && echo "1" || echo "0"; }
 }
 
 [ "$eql" = "e" ] && {
-  [ "$tgt" -lt "$(dec_at "0")" ] || [ "$tgt" -gt "$(dec_at "$(($len_space - 1))")" ] && not_found
+  [ "$tgt" -lt "$(dec_at "0")" ] || [ "$tgt" -gt "$(dec_at "$((len_space - 1))")" ] && not_found
   f() { [ "$(dec_at "$idx_mid")" -ge "$tgt" ] && echo "1" || echo "0"; }
 }
 
 [ "$eql" = "lt" ] || [ "$eql" = "le" ] \
-  && idx_min="-1" idx_max="$(($len_space - 1))" \
+  && idx_min="-1" idx_max="$((len_space - 1))" \
   || idx_min="0" idx_max="$len_space"
 
 search_loop
@@ -296,8 +296,8 @@ search_loop
 } || {
   [ "$rpt" = "max" ] && { [ "$eql" = "gt" ] || [ "$eql" = "ge" ] || [ "$eql" = "e" ]; } && {
     idx_res="$idx_min" res="$(dec_at "$idx_min")"
-    idx_min="$(($idx_res - 1))" idx_max="$(($len_space - 1))"
-    f() { [ "$(dec_at "$(($idx_mid + 1))")" -ne "$res" ] && echo "1" || echo "0"; }
+    idx_min="$((idx_res - 1))" idx_max="$((len_space - 1))"
+    f() { [ "$(dec_at "$((idx_mid + 1))")" -ne "$res" ] && echo "1" || echo "0"; }
   } 
 } && search_loop
 
