@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-set -e
+set -eu
 
 script="$(basename "$0")"
 
@@ -18,7 +18,7 @@ DESCRIPTION
     -s FILE
         FILE containing the search space.
 
-        File contents - a linebreak delimited, sorted, min-to-max directional list of non-repeating, negative signed integers.
+        File contents - a linebreak-delimited, min-to-max directional and sorted list of non-repeating, negative-signed integers.
 
         For example:
         -100
@@ -60,8 +60,8 @@ DESCRIPTION
         Prints the result number index before the result value.
 
         e.g.
-        The index is 0 and the number 22, it prints '0 22'
-        The index is 81 and the number is -FFFF, it prints '81 -FFFF'
+        The result index is 0 and the number 22, so it prints '0 22'
+        The result index is 81 and the number is -FFFF, so it prints '81 -FFFF'
 
     -b BASE
         The numerical base for the target and seach space.
@@ -200,6 +200,17 @@ rpt="${arg_opt_r:-"min"}"
 print_idx="$opt_i"
 
 # Binary search
+
+idx_loop=
+idx_max=
+idx_mid=
+idx_min=
+max=
+max_orig=
+mid=
+mid_orig=
+min=
+min_orig=
 
 print_state() {
   [ ! "$debug" ] && return
